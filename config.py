@@ -1,4 +1,5 @@
-path = r"C:\Users\rando\Downloads\archive\creditcard.csv"
+# Add the dataset's file path here
+path = ''
 
 TARGET_COLUMN = "Class"
 
