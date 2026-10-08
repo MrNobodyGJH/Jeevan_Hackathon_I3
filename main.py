@@ -1,81 +1,76 @@
 from config import path
-from data import load_and_preprocess_data
-from classical import train_classical_svm
-from quantum import train_quantum_svm
+
+from data import (
+    load_and_preprocess_data
+)
+
+from experiment import (
+    run_training_size_experiment
+)
+
+from plots import (
+    plot_precision,
+    plot_recall,
+    plot_accuracy
+)
 
 
 def main():
 
-    # Load and preprocess data
-    X_train, X_test, y_train, y_test = (
-        load_and_preprocess_data(path)
-    )
+    # Load and prepare the dataset
+    (
+        X_train,
+        X_test,
+        y_train,
+        y_test
+    ) = load_and_preprocess_data(path)
 
     if X_train is None:
         return
 
-    # Classical baseline
-    classical_precision, classical_recall = (
-        train_classical_svm(
-            X_train,
-            y_train,
-            X_test,
-            y_test
+    # Four gradually increasing training sizes
+    training_sizes = [
+        5,
+        10,
+        15,
+        20
+    ]
+
+    results = run_training_size_experiment(
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+        training_sizes
+    )
+
+    # Print the complete comparison
+    print("\n" + "=" * 85)
+    print("TRAINING SIZE COMPARISON")
+    print("=" * 85)
+
+    print(
+        results.to_string(
+            index=False,
+            float_format=lambda x: f"{x:.4f}"
         )
     )
 
-    # Quantum model
-    quantum_precision, quantum_recall = (
-        train_quantum_svm(
-            X_train,
-            y_train,
-            X_test,
-            y_test
-        )
-    )
+    print("=" * 85)
 
-    # Final comparison
-    print("\n" + "=" * 60)
-    print("QUANTUM FRAUD DETECTOR")
-    print("Classical RBF-SVM vs Quantum Kernel SVM")
-    print("=" * 60)
+    # Create the three metric plots
+    plot_precision(results)
+    plot_recall(results)
+    plot_accuracy(results)
 
-    print(
-        f"{'Metric':<20} | "
-        f"{'Classical SVM':<18} | "
-        f"{'Quantum SVM'}"
-    )
-
-    print("-" * 60)
-
-    print(
-        f"{'Precision':<20} | "
-        f"{classical_precision:<18.4f} | "
-        f"{quantum_precision:.4f}"
+    # Save the numerical results
+    results.to_csv(
+        "training_size_results.csv",
+        index=False
     )
 
     print(
-        f"{'Recall':<20} | "
-        f"{classical_recall:<18.4f} | "
-        f"{quantum_recall:.4f}"
-    )
-
-    print("=" * 60)
-
-    print("\n[BUSINESS BRIEF]")
-    print(
-        "• Fraud and legitimate transactions were balanced "
-        "before training."
-    )
-    print(
-        "• PCA reduced 30 features to 3 quantum features."
-    )
-    print(
-        "• The quantum model uses a 3-qubit ZZ feature map."
-    )
-    print(
-        "• Recall is important because missed fraud "
-        "can represent financial loss."
+        "\nThe plots and results table have been saved."
     )
 
 

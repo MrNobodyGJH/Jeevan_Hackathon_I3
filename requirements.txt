@@ -1,0 +1,9 @@
+pandas
+numpy
+scikit-learn
+tqdm
+
+qiskit
+qiskit-aer
+qiskit-machine-learning
+qiskit-ibm-runtime
